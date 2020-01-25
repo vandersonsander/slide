@@ -1,0 +1,27 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+ul {
+  list-style-type: none;
+}
+
+.slide {
+  display: flex;
+}
+
+.slide li {
+  flex-grow: 1;
+  flex-shrink: 0;
+  flex-basis: 1;
+  max-width: 80vw;
+  margin: 20px 10vw;
+}
+
+/*# sourceMappingURL=style.css.map */
