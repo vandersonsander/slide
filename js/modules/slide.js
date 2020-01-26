@@ -4,6 +4,7 @@ export default class Slide {
     this.slide = this.s(slide);
     this.posx = 0;
     this.touch = { start: 0, move: 0 };
+    this.activeSlide = 0;
   }
 
   s(e) {
@@ -59,6 +60,35 @@ export default class Slide {
     target.style.transform = `translate3d(${x}px, 0, 0)`;
   }
 
+  calcPosition(index) {
+    const slides = [...this.slide.children].map((elem) => (
+      { position: -elem.offsetLeft, width: elem.offsetWidth }));
+    const { position, width } = slides[index];
+    const margin = (this.wrapper.offsetWidth - width) / 2;
+    return position + margin;
+  }
+
+  changeSlide(index) {
+    const { length } = this.slide.children;
+    if (index < 0 || index >= length) {
+      return undefined;
+    }
+    this.activeSlide = index;
+    this.posx = this.calcPosition(index);
+    this.move(this.slide, this.posx);
+    return this.activeSlide;
+  }
+
+  prevSlide() {
+    this.changeSlide(this.activeSlide - 1);
+    return this.activeSlide;
+  }
+
+  nextSlide() {
+    this.changeSlide(this.activeSlide + 1);
+    return this.activeSlide;
+  }
+
   bindEvents() {
     // Bind the Mouse Events
     this.onStart = this.onStart.bind(this);
@@ -68,12 +98,14 @@ export default class Slide {
     this.touchStart = this.touchStart.bind(this);
     this.touchMove = this.touchMove.bind(this);
     this.touchEnd = this.touchEnd.bind(this);
-    // this.tMove = this.tMove.bind(this);
+    // Controls
+    this.prevSlide = this.prevSlide.bind(this);
   }
 
   init() {
     this.bindEvents();
     this.ae(this.wrapper, 'mousedown', this.onStart);
     this.ae(this.wrapper, 'touchstart', this.touchStart);
+    return this;
   }
 }
