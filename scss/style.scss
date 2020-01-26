@@ -10,4 +10,9 @@
   flex-basis: 1;
   max-width: 80vw;
   margin: 20px 10vw;
+  user-select: none;
+}
+
+.wrapper {
+  overflow: hidden;
 }
