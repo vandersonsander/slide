@@ -6,6 +6,7 @@
 img {
   display: block;
   max-width: 100%;
+  max-height: 80vh;
 }
 
 ul {
@@ -21,13 +22,13 @@ ul {
   flex-shrink: 0;
   flex-basis: 1;
   max-width: 80vw;
-  max-height: 80vh;
   margin: 20px 10vw;
   user-select: none;
 }
 
 .wrapper {
   overflow: hidden;
+  max-height: 80vh;
 }
 
 /*# sourceMappingURL=style.css.map */
