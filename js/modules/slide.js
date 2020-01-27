@@ -30,6 +30,7 @@ export default class Slide {
     this.transition(false);
     this.ae(this.wrapper, 'mousemove', this.onMove);
     this.ae(this.wrapper, 'mouseup', this.onEnd);
+    this.ae(this.wrapper, 'mouseout', this.onEnd);
   }
 
   onMove(e) {
@@ -92,6 +93,7 @@ export default class Slide {
     this.activeSlide = index;
     this.posx = this.calcPosition(index).position();
     this.move(this.slide, this.posx);
+    this.active(index);
     return this.activeSlide;
   }
 
@@ -105,7 +107,14 @@ export default class Slide {
 
   // Add transition effect
   transition(active) {
-    this.slide.style.transition = active ? 'transform .3s' : 'none';
+    this.slide.style.transition = active ? 'transform .4s' : 'none';
+  }
+
+  // Add class active to active slide
+  active(index) {
+    const slides = [...this.slide.children];
+    slides.forEach((elem) => elem.classList.remove('active'));
+    slides[index].classList.add('active');
   }
 
   bindEvents() {
@@ -122,9 +131,11 @@ export default class Slide {
     this.nextSlide = this.nextSlide.bind(this);
     this.changeSlide = this.changeSlide.bind(this);
     this.checkPosition = this.checkPosition.bind(this);
+    this.active = this.active.bind(this);
   }
 
   init() {
+    this.active(0);
     this.bindEvents();
     this.transition(true);
     this.ae(this.wrapper, 'mousedown', this.onStart);
