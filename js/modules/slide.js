@@ -1,3 +1,5 @@
+import debounce from './debounce.js';
+
 export default class Slide {
   constructor(wrapper, slide) {
     this.wrapper = this.s(wrapper);
@@ -61,6 +63,7 @@ export default class Slide {
   touchEnd() {
     this.posx += this.touch.move;
     this.checkPosition(this.touch.move);
+    this.touch.move = 0;
     this.re(this.wrapper, 'touchmove', this.touchMove);
   }
 
@@ -117,6 +120,11 @@ export default class Slide {
     slides[index].classList.add('active');
   }
 
+  // Control the window resize
+  resize() {
+    this.changeSlide(this.activeSlide);
+  }
+
   bindEvents() {
     // Binding the Mouse Events
     this.onStart = this.onStart.bind(this);
@@ -132,11 +140,14 @@ export default class Slide {
     this.changeSlide = this.changeSlide.bind(this);
     this.checkPosition = this.checkPosition.bind(this);
     this.active = this.active.bind(this);
+    // Control the window Events
+    this.resize = debounce(this.resize.bind(this), 400);
   }
 
   init() {
     this.active(0);
     this.bindEvents();
+    window.addEventListener('resize', this.resize);
     this.transition(true);
     this.ae(this.wrapper, 'mousedown', this.onStart);
     this.ae(this.wrapper, 'touchstart', this.touchStart);
