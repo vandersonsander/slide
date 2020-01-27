@@ -4,6 +4,7 @@ export default class Slide {
     this.slide = this.s(slide);
     this.posx = 0;
     this.touch = { start: 0, move: 0 };
+    this.mouse = { move: 0 };
     this.activeSlide = 0;
   }
 
@@ -26,16 +27,21 @@ export default class Slide {
   // Mouse Events
   onStart(e) {
     e.preventDefault();
+    this.transition(false);
     this.ae(this.wrapper, 'mousemove', this.onMove);
     this.ae(this.wrapper, 'mouseup', this.onEnd);
+    this.ae(this.wrapper, 'mouseout', this.onEnd);
   }
 
   onMove(e) {
     this.posx += e.movementX;
+    this.mouse.move += e.movementX;
     this.move(this.slide, this.posx);
   }
 
   onEnd() {
+    this.checkPosition(this.mouse.move);
+    this.mouse.move = 0;
     this.re(this.wrapper, 'mousemove', this.onMove);
   }
 
@@ -44,6 +50,7 @@ export default class Slide {
     this.ae(this.wrapper, 'touchmove', this.touchMove);
     this.ae(this.wrapper, 'touchend', this.touchEnd);
     this.touch.start = e.touches[0].clientX;
+    this.transition(false);
   }
 
   touchMove(e) {
@@ -53,7 +60,14 @@ export default class Slide {
 
   touchEnd() {
     this.posx += this.touch.move;
+    this.checkPosition(this.touch.move);
     this.re(this.wrapper, 'touchmove', this.touchMove);
+  }
+
+  checkPosition(pos) {
+    if (pos < -120) this.nextSlide();
+    else if (pos > 120) this.prevSlide();
+    else this.changeSlide(this.activeSlide);
   }
 
   move(target, x) {
@@ -65,45 +79,65 @@ export default class Slide {
       { position: -elem.offsetLeft, width: elem.offsetWidth }));
     const { position, width } = slides[index];
     const margin = (this.wrapper.offsetWidth - width) / 2;
-    return position + margin;
+    return { position: () => position + margin, margin };
   }
 
   changeSlide(index) {
+    this.transition(true);
     const { length } = this.slide.children;
     if (index < 0 || index >= length) {
+      this.posx = this.calcPosition(this.activeSlide).position();
+      this.move(this.slide, this.posx);
       return undefined;
     }
     this.activeSlide = index;
-    this.posx = this.calcPosition(index);
+    this.posx = this.calcPosition(index).position();
     this.move(this.slide, this.posx);
+    this.active(index);
     return this.activeSlide;
   }
 
   prevSlide() {
-    this.changeSlide(this.activeSlide - 1);
-    return this.activeSlide;
+    return this.changeSlide(this.activeSlide - 1);
   }
 
   nextSlide() {
-    this.changeSlide(this.activeSlide + 1);
-    return this.activeSlide;
+    return this.changeSlide(this.activeSlide + 1);
+  }
+
+  // Add transition effect
+  transition(active) {
+    this.slide.style.transition = active ? 'transform .4s' : 'none';
+  }
+
+  // Add class active to active slide
+  active(index) {
+    const slides = [...this.slide.children];
+    slides.forEach((elem) => elem.classList.remove('active'));
+    slides[index].classList.add('active');
   }
 
   bindEvents() {
-    // Bind the Mouse Events
+    // Binding the Mouse Events
     this.onStart = this.onStart.bind(this);
     this.onMove = this.onMove.bind(this);
     this.onEnd = this.onEnd.bind(this);
-    // Bind the Touch Events
+    // Binding the Touch Events
     this.touchStart = this.touchStart.bind(this);
     this.touchMove = this.touchMove.bind(this);
     this.touchEnd = this.touchEnd.bind(this);
-    // Controls
+    // Binding the Controls
     this.prevSlide = this.prevSlide.bind(this);
+    this.nextSlide = this.nextSlide.bind(this);
+    this.changeSlide = this.changeSlide.bind(this);
+    this.checkPosition = this.checkPosition.bind(this);
+    this.active = this.active.bind(this);
   }
 
   init() {
+    this.active(0);
     this.bindEvents();
+    this.transition(true);
     this.ae(this.wrapper, 'mousedown', this.onStart);
     this.ae(this.wrapper, 'touchstart', this.touchStart);
     return this;

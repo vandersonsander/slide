@@ -4,6 +4,10 @@
   display: flex;
 }
 
+.slide:hover {
+  will-change: transform;
+}
+
 .slide li {
   flex-grow: 1;
   flex-shrink: 0;
@@ -11,6 +15,16 @@
   max-width: 80vw;
   margin: 20px 10vw;
   user-select: none;
+  border-radius: 5px;
+  overflow: hidden;
+  transform: scale(.8);
+  transition: .4s;
+  opacity: .5;
+}
+
+.slide li.active {
+  opacity: 1;
+  transform: scale(1);
 }
 
 .wrapper {
