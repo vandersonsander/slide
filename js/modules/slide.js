@@ -120,7 +120,7 @@ export default class Slide {
     slides[index].classList.add('active');
   }
 
-  // Control the window resize
+  // Control the window resize.
   resize() {
     this.changeSlide(this.activeSlide);
   }
