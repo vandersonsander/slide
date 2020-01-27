@@ -1,13 +1,15 @@
 import debounce from './debounce.js';
 
 export default class Slide {
-  constructor(wrapper, slide) {
+  constructor(wrapper, slide, controlNav, customControls) {
     this.wrapper = this.s(wrapper);
     this.slide = this.s(slide);
     this.posx = 0;
     this.touch = { start: 0, move: 0 };
     this.mouse = { move: 0 };
     this.activeSlide = 0;
+    this.controlNav = controlNav ? this.s(controlNav) : this.createNav();
+    this.customControls = customControls ? this.s(customControls) : this.createCustomControls();
   }
 
   s(e) {
@@ -24,6 +26,52 @@ export default class Slide {
 
   re(target, event, callback) {
     target.removeEventListener(event, callback);
+  }
+
+  // Create Element
+  ce(e, c, t) {
+    e = document.createElement(e); // Create Element
+    e.className = c; // Define ClassName
+    e.innerText = t; // Insert Text
+    return e;
+  }
+
+  // Create Default Nav
+  createNav() {
+    const prev = this.ce('button', 'prev-nav', '<');
+    const next = this.ce('button', 'prev-nav', '>');
+    const navControls = this.ce('div', 'nav-controls', '');
+    navControls.appendChild(prev);
+    navControls.appendChild(next);
+    document.body.insertBefore(navControls, this.wrapper.nextSibling);
+    return { prev, next, navControls };
+  }
+
+  // Add Nav Functions
+  addNavFunctions() {
+    this.ae(this.controlNav.children[0], 'click', this.prevSlide);
+    this.ae(this.controlNav.children[1], 'click', this.nextSlide);
+  }
+
+  // Create Custom Controls
+  createCustomControls() {
+    const { length } = this.slide.children;
+    const controls = this.ce('ul', 'custom-controls', '');
+    let i;
+    // eslint-disable-next-line no-plusplus
+    for (i = 1; i <= length; i++) {
+      controls.appendChild(this.ce('li', '', ''));
+    }
+    return controls;
+  }
+
+  // Add Functions to Custom Controls
+  addFunctionCC() {
+    document.body.insertBefore(this.customControls, this.wrapper);
+    const controls = [...this.customControls.children];
+    controls.forEach((elem, i) => {
+      elem.addEventListener('click', () => this.changeSlide(i));
+    });
   }
 
   // Mouse Events
@@ -110,14 +158,19 @@ export default class Slide {
 
   // Add transition effect
   transition(active) {
-    this.slide.style.transition = active ? 'transform .4s' : 'none';
+    this.slide.style.transition = active ? 'transform .6s' : 'none';
   }
 
   // Add class active to active slide
   active(index) {
     const slides = [...this.slide.children];
-    slides.forEach((elem) => elem.classList.remove('active'));
+    const customControls = [...this.customControls.children];
+    slides.forEach((elem, i) => {
+      elem.classList.remove('active');
+      customControls[i].classList.remove('active');
+    });
     slides[index].classList.add('active');
+    customControls[index].classList.add('active');
   }
 
   // Control the window resize.
@@ -147,6 +200,8 @@ export default class Slide {
   init() {
     this.active(0);
     this.bindEvents();
+    this.addNavFunctions();
+    this.addFunctionCC();
     window.addEventListener('resize', this.resize);
     this.transition(true);
     this.ae(this.wrapper, 'mousedown', this.onStart);
