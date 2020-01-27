@@ -2,6 +2,7 @@
 
 .slide {
   display: flex;
+  align-items: flex-start;
 }
 
 .slide:hover {
@@ -12,8 +13,7 @@
   flex-grow: 1;
   flex-shrink: 0;
   flex-basis: 1;
-  max-width: 90vw;
-  margin: 20px;
+  max-width: calc(900px - 20%);
   user-select: none;
   border-radius: 5px;
   overflow: hidden;
@@ -42,7 +42,7 @@
   margin: 20px 5px;
   border-radius: 50%;
   overflow: hidden;
-  opacity: .7;
+  opacity: .5;
   transition: .3s;
   background: #fa0;
 }
@@ -55,7 +55,8 @@
 
 .nav-controls {
   display: flex;
-  justify-content: space-evenly;
+  justify-content: space-around;
+  margin: 10px 0;
 }
 
 .nav-controls * {

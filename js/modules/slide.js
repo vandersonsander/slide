@@ -198,7 +198,7 @@ export default class Slide {
   }
 
   init() {
-    this.active(0);
+    this.changeSlide(0);
     this.bindEvents();
     this.addNavFunctions();
     this.addFunctionCC();
